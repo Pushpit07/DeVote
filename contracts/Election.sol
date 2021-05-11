@@ -1,10 +1,41 @@
 pragma solidity ^0.5.0;
 
 contract Election {
-    string public candidate;
+    // Candidates structure
+    struct Candidate {
+        uint256 id;
+        string name;
+        uint256 voteCount;
+    }
+
+    // Store candidates
+    mapping(uint256 => Candidate) public candidates;
+
+    // Store accounts that have already voted
+    mapping(address => bool) public voters;
+
+    // Store candidates count
+    uint256 public candidatesCount;
 
     // Constructor
     constructor() public {
-        candidate = "Candidate 1";
+        addCandidate("BJP");
+        addCandidate("Congress");
+        addCandidate("AAP");
+        addCandidate("BSP");
+    }
+
+    // Add a candidate
+    function addCandidate(string memory _name) private {
+        candidatesCount++;
+        candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
+    }
+
+    function vote(uint256 _candidateId) public {
+        // Record that voter has voted
+        voters[msg.sender] = true;
+
+        // Update candidate vote count
+        candidates[_candidateId].voteCount++;
     }
 }
