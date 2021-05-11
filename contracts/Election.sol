@@ -32,6 +32,12 @@ contract Election {
     }
 
     function vote(uint256 _candidateId) public {
+        // Require that they haven't voted before
+        require(!voters[msg.sender]);
+
+        // Require a valid candidate
+        require(_candidateId > 0 && _candidateId <= candidatesCount);
+
         // Record that voter has voted
         voters[msg.sender] = true;
 
