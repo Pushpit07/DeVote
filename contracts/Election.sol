@@ -25,6 +25,9 @@ contract Election {
         addCandidate("BSP");
     }
 
+    // voted event
+    event votedEvent(uint256 indexed _candidateId);
+
     // Add a candidate
     function addCandidate(string memory _name) private {
         candidatesCount++;
@@ -43,5 +46,8 @@ contract Election {
 
         // Update candidate vote count
         candidates[_candidateId].voteCount++;
+
+        // trigger voted event
+        emit votedEvent(_candidateId);
     }
 }
