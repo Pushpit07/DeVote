@@ -1,128 +1,102 @@
-App = {
-  web3Provider: null,
-  contracts: {},
-  account: '0x0',
-  hasVoted: false,
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Web3 from 'web3'
+import TruffleContract from 'truffle-contract'
+import Election from '../../build/contracts/Election.json'
+import Content from './Content'
+import 'bootstrap/dist/css/bootstrap.css'
 
-  init: function () {
-    return App.initWeb3();
-  },
-
-  initWeb3: function () {
-    // TODO: refactor conditional
-    if (typeof web3 !== 'undefined') {
-      // If a web3 instance is already provided by Meta Mask.
-      App.web3Provider = web3.currentProvider;
-      web3 = new Web3(web3.currentProvider);
-    } else {
-      // Specify default instance if no web3 instance provided
-      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-      web3 = new Web3(App.web3Provider);
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      account: '0x0',
+      candidates: [],
+      hasVoted: false,
+      loading: true,
+      voting: false,
     }
-    return App.initContract();
-  },
 
-  initContract: function () {
-    $.getJSON("Election.json", function (election) {
-      // Instantiate a new truffle contract from the artifact
-      App.contracts.Election = TruffleContract(election);
-      // Connect provider to interact with contract
-      App.contracts.Election.setProvider(App.web3Provider);
+    if (typeof web3 != 'undefined') {
+      this.web3Provider = web3.currentProvider
+    } else {
+      this.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545')
+    }
 
-      // App.listenForEvents();
+    this.web3 = new Web3(this.web3Provider)
 
-      return App.render();
-    });
-  },
+    this.election = TruffleContract(Election)
+    this.election.setProvider(this.web3Provider)
 
-  // Listen for events emitted from the contract
-  // listenForEvents: function () {
-  //   App.contracts.Election.deployed().then(function (instance) {
-  //     // Restart Chrome if you are unable to receive this event
-  //     // This is a known issue with Metamask
-  //     // https://github.com/MetaMask/metamask-extension/issues/2393
-  //     instance.votedEvent({}, {
-  //       fromBlock: 0,
-  //       toBlock: 'latest'
-  //     }).watch(function (error, event) {
-  //       console.log("event triggered", event)
-  //       // Reload when a new vote is recorded
-  //       App.render();
-  //     });
-  //   });
-  // },
-
-  render: function () {
-    var electionInstance;
-    var loader = $("#loader");
-    var content = $("#content");
-
-    loader.show();
-    content.hide();
-
-    // Load account data
-    web3.eth.getCoinbase(function (err, account) {
-      if (err === null) {
-        App.account = account;
-        $("#accountAddress").html("Your Account: " + account);
-      }
-    });
-
-    // Load contract data
-    App.contracts.Election.deployed().then(function (instance) {
-      electionInstance = instance;
-      return electionInstance.candidatesCount();
-    }).then(function (candidatesCount) {
-      var candidatesResults = $("#candidatesResults");
-      candidatesResults.empty();
-
-      var candidatesSelect = $('#candidatesSelect');
-      candidatesSelect.empty();
-
-      for (var i = 1; i <= candidatesCount; i++) {
-        electionInstance.candidates(i).then(function (candidate) {
-          var id = candidate[0];
-          var name = candidate[1];
-          var voteCount = candidate[2];
-
-          // Render candidate Result
-          var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
-          candidatesResults.append(candidateTemplate);
-
-          // Render candidate ballot option
-          var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
-          candidatesSelect.append(candidateOption);
-        });
-      }
-      return electionInstance.voters(App.account);
-    }).then(function (hasVoted) {
-      // Do not allow a user to vote
-      if (hasVoted) {
-        $('form').hide();
-      }
-      loader.hide();
-      content.show();
-    }).catch(function (error) {
-      console.warn(error);
-    });
-  },
-
-  castVote: function () {
-    var candidateId = $('#candidatesSelect').val();
-    App.contracts.Election.deployed().then(function (instance) {
-      return instance.vote(candidateId, { from: App.account });
-    }).then(function (result) {
-      // Wait for votes to update
-      $("#content").hide();
-      $("#loader").show();
-    }).catch(function (err) {
-      console.error(err);
-    });
+    this.castVote = this.castVote.bind(this)
+    this.watchEvents = this.watchEvents.bind(this)
   }
-};
 
-$(function () {
-  $(window).load(function () {
-    App.init();
-  });
-});
+  componentDidMount() {
+    // TODO: Refactor with promise chain
+    this.web3.eth.getCoinbase((err, account) => {
+      this.setState({ account })
+      this.election.deployed().then((electionInstance) => {
+        this.electionInstance = electionInstance
+        this.watchEvents()
+        this.electionInstance.candidatesCount().then((candidatesCount) => {
+          for (var i = 1; i <= candidatesCount; i++) {
+            this.electionInstance.candidates(i).then((candidate) => {
+              const candidates = [...this.state.candidates]
+              candidates.push({
+                id: candidate[0],
+                name: candidate[1],
+                voteCount: candidate[2]
+              });
+              this.setState({ candidates: candidates })
+            });
+          }
+        })
+        this.electionInstance.voters(this.state.account).then((hasVoted) => {
+          this.setState({ hasVoted, loading: false })
+        })
+      })
+    })
+  }
+
+  watchEvents() {
+    // TODO: trigger event when vote is counted, not when component renders
+    this.electionInstance.votedEvent({}, {
+      fromBlock: 0,
+      toBlock: 'latest'
+    }).watch((error, event) => {
+      this.setState({ voting: false })
+    })
+  }
+
+  castVote(candidateId) {
+    this.setState({ voting: true })
+    this.electionInstance.vote(candidateId, { from: this.state.account }).then((result) =>
+      this.setState({ hasVoted: true })
+    )
+  }
+
+  render() {
+    return (
+      <div class='row'>
+        <div class='col-lg-12 text-center' >
+          <h1>Election Results</h1>
+          <br/>
+          { this.state.loading || this.state.voting
+            ? <p class='text-center'>Loading...</p>
+            : <Content
+                account={this.state.account}
+                candidates={this.state.candidates}
+                hasVoted={this.state.hasVoted}
+                castVote={this.castVote} />
+          }
+        </div>
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(
+   <App />,
+   document.querySelector('#root')
+)
