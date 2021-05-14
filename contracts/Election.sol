@@ -21,10 +21,10 @@ contract Election {
 
     // Constructor
     constructor() public {
-        addCandidate("BJP");
-        addCandidate("Congress");
         addCandidate("AAP");
+        addCandidate("BJP");
         addCandidate("BSP");
+        addCandidate("INC");
     }
 
     // Add a candidate

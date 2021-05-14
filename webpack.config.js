@@ -12,8 +12,8 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader','css-loader'],
-        include: [/src/, /node_modules/]
+        use: ['style-loader', 'css-loader'],
+        include: [/src/, /node_modules/, /css/]
       }, {
         test: /\.jsx?$/,
         loader: 'babel-loader',
@@ -22,9 +22,18 @@ module.exports = {
           presets: ['es2015', 'react', 'stage-2']
         }
       }, {
+        test: /\.html$/,
+        exclude: /node_modules/,
+        loader: 'html-loader'
+      }, {
         test: /\.json$/,
         loader: 'json-loader',
         include: '/build/contracts/'
+      }, {
+        test: /\.(png|jpg)$/,
+        use: {
+          loader: 'url-loader'
+        }
       }
     ]
   }

@@ -5,6 +5,8 @@ import TruffleContract from 'truffle-contract'
 import Election from '../../build/contracts/Election.json'
 import Content from './Content'
 import 'bootstrap/dist/css/bootstrap.css'
+import '../css/App.css';
+import Background from '../../assets/background.png';
 
 class App extends React.Component {
   constructor(props) {
@@ -74,22 +76,26 @@ class App extends React.Component {
     this.electionInstance.vote(candidateId, { from: this.state.account }).then((result) =>
       this.setState({ hasVoted: true })
     )
+    window.location.reload();
   }
 
   render() {
     return (
-      <div class='row'>
-        <div class='col-lg-12 text-center' >
-          <h1>Election Results</h1>
-          <br/>
-          { this.state.loading || this.state.voting
-            ? <p class='text-center'>Loading...</p>
-            : <Content
+      <div>
+        <img src={Background} alt="Background" className="background" />
+        <div class='row'>
+          <div class='col-lg-12 text-center' >
+            <h1 className="mb-4 text heading">De-Vote</h1>
+            <br />
+            {this.state.loading || this.state.voting
+              ? <p class='text-center'>Loading...</p>
+              : <Content
                 account={this.state.account}
                 candidates={this.state.candidates}
                 hasVoted={this.state.hasVoted}
                 castVote={this.castVote} />
-          }
+            }
+          </div>
         </div>
       </div>
     )
@@ -97,6 +103,6 @@ class App extends React.Component {
 }
 
 ReactDOM.render(
-   <App />,
-   document.querySelector('#root')
+  <App />,
+  document.querySelector('#root')
 )

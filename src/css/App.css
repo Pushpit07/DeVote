@@ -1,0 +1,124 @@
+:root {
+	/* --theme-color: #3498db; */
+	/* --theme-color: #4f47b3; */
+	--theme-color: #e83827;
+	--theme-background: #f5f5ef;
+}
+
+body {
+	margin-top: 5%;
+	margin-left: -40%;
+	font-size: 15px;
+}
+
+.text {
+	color: #2b2b2b;
+	font-family: "Lato", sans-serif;
+	text-shadow: -2px -2px 4px #ffffff73, 2px 2px 5px rgba(94, 104, 121, 0.288);
+}
+
+.heading {
+	font-weight: 600;
+}
+
+.background {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.acc {
+	font-size: 0.9em;
+	color: rgb(73, 73, 73);
+}
+
+.already_casted {
+	font-size: 1.1em;
+	color: rgb(73, 73, 73);
+	margin-top: 100px;
+	margin-bottom: 150px;
+}
+
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 82px;
+	height: 36px;
+	border-radius: 34px;
+	outline: none;
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	outline: none;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: var(--theme-background);
+	box-shadow: -5px -5px 8px rgb(255, 254, 251), 3px 3px 5px rgba(94, 104, 121, 0.288);
+	/* box-shadow: -6px -6px 18px 0 rgba(255, 255, 255, 0.7), 6px 6px 18px 0 rgba(0, 0, 0, 0.2); */
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 5px;
+	bottom: 5px;
+	background-color: var(--theme-color);
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+}
+
+input:checked + .slider {
+	background-color: var(--theme-color);
+	box-shadow: -3px -3px 7px #ffffff73, 2px 2px 5px rgba(94, 104, 121, 0.288);
+}
+
+input:focus + .slider {
+	outline: none;
+	border: none;
+}
+
+input:checked + .slider:before {
+	-webkit-transform: translateX(45px);
+	-ms-transform: translateX(45px);
+	transform: translateX(45px);
+	background-color: var(--theme-background);
+	box-shadow: -4px -4px 8px var(--theme-color), 3px 3px 4px rgba(94, 104, 121, 0.288);
+}
+
+/* Rounded sliders */
+.slider.round {
+	border-radius: 34px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+	box-shadow: -0.5px -0.5px 0.6px var(--theme-color), 2px 2px 5px rgba(94, 104, 121, 0.288);
+}
+
+.note {
+	color: #2b2b2b;
+	font-family: "Lato", sans-serif;
+	font-size: 1.4em;
+	text-shadow: -3px -3px 7px #ffffff73, 2px 2px 5px rgba(94, 104, 121, 0.288);
+}
+
+.text_vertical_center {
+	margin-top: 0 auto !important;
+	margin-top: 8px !important;
+}

@@ -17,22 +17,22 @@ contract("Election", function (accounts) {
             return electionInstance.candidates(1);
         }).then(function (candidate) {
             assert.equal(candidate[0], 1, "contains incorrect id");
-            assert.equal(candidate[1], "BJP", "contains incorrect name");
+            assert.equal(candidate[1], "AAP", "contains incorrect name");
             assert.equal(candidate[2], 0, "contains incorrect votes count");
             return electionInstance.candidates(2);
         }).then(function (candidate) {
             assert.equal(candidate[0], 2, "contains incorrect id");
-            assert.equal(candidate[1], "Congress", "contains incorrect name");
+            assert.equal(candidate[1], "BJP", "contains incorrect name");
             assert.equal(candidate[2], 0, "contains incorrect votes count");
             return electionInstance.candidates(3);
         }).then(function (candidate) {
             assert.equal(candidate[0], 3, "contains incorrect id");
-            assert.equal(candidate[1], "AAP", "contains incorrect name");
+            assert.equal(candidate[1], "BSP", "contains incorrect name");
             assert.equal(candidate[2], 0, "contains incorrect votes count");
             return electionInstance.candidates(4);
         }).then(function (candidate) {
             assert.equal(candidate[0], 4, "contains incorrect id");
-            assert.equal(candidate[1], "BSP", "contains incorrect name");
+            assert.equal(candidate[1], "INC", "contains incorrect name");
             assert.equal(candidate[2], 0, "contains incorrect votes count");
         });
     });

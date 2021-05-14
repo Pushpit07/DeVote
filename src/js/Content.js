@@ -7,12 +7,12 @@ class Content extends React.Component {
     return (
       <div>
         <Table candidates={this.props.candidates} />
-        <hr/>
+        <hr />
         { !this.props.hasVoted ?
           <Form candidates={this.props.candidates} castVote={this.props.castVote} />
-          : null
+          : <div className="already_casted">You have already casted your vote.</div>
         }
-        <p>Your account: {this.props.account}</p>
+        <p className="mt-3 acc">Your account: {this.props.account}</p>
       </div>
     )
   }
